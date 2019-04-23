@@ -34,7 +34,43 @@ void ReadTeamNames()//takimlar.txt icinden takimlarin isimlerini okumayi saglaya
 	fclose(fp);
 } 
 
-void ReadMatches(); //maclar.1txt dosyasindan maclari okumayi saglayan fonksiyon.
+struct match{
+	int hscore;	//h = home a = away 
+	char hteam;
+	int ascore;
+	char ateam;
+};
+void ReadMatches()
+{
+	int i;
+	int m;//mac sayisi
+	
+	FILE *fp;
+	fp = fopen("C:/maclar1.txt","r");//değiştirilecek konum.
+	
+	printf("Dosyadan Kac mac okunacak?: ");
+	scanf("%d",&m);
+	
+	struct match matches[m];
+	
+	if(fp){
+		if(!feof(fp)){
+		
+			for(i=0;i<m;i++)
+			{	
+			fscanf(fp,"%c %d %c %d\n",&matches[i].hteam,&matches[i].hscore,&matches[i].ateam,&matches[i].ascore);
+			printf("%d. mac:  %c %d %c %d\n",i+1,matches[i].hteam,matches[i].hscore,matches[i].ateam,matches[i].ascore);
+			}
+		}
+	}
+
+	else{
+	
+		printf("dosya okunamadi!");
+		
+		}
+	fclose(fp);
+}
 
 int main(){
 
