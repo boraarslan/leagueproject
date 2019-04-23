@@ -68,7 +68,7 @@ void ReadMatches()
 	
 		printf("dosya okunamadi!");
 		
-		}
+	}
 	fclose(fp);
 }
 
