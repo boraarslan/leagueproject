@@ -17,7 +17,7 @@ struct team{
 
 void ReadTeamNames()//takimlar.txt icinden takimlarin isimlerini okumayi saglayan fonksiyon.
 {
-	int n;
+	int n;//bunu global tanimlamamiz gerek. takim sayisini buradan seciyoruz.
 	int i;
 	FILE *fp;
 	fp = fopen("C:/takimlar.txt","r");//konum değiştirilecek. ben kolaylık olsun diye c nin içerisine attım.
