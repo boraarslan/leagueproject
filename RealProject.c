@@ -12,6 +12,7 @@ typedef struct teams{
     uint nscore;
     int average;
     int points;
+    char* mchart;   //
 }Team;
 
 int NumberOfTeams;                                                  //Takim sayisini tutan degisken
@@ -26,12 +27,15 @@ void CopyString(char from[] , char to[]){
     to[i] = '\0';
 }
 
-void AllocateMemory(int TeamCount){
-    AdressToStartOfTeams = calloc(sizeof(Team) , TeamCount);
-}
-
 Team* MoveStruct(int shift){
     return (AdressToStartOfTeams + shift);
+}
+
+void AllocateMemory(int TeamCount){
+    AdressToStartOfTeams = calloc(sizeof(Team) , TeamCount);
+    for(int i = 0; i <= TeamCount ; i++){
+        MoveStruct(i)->mchart = (char*)calloc(sizeof(char) , TeamCount);
+    }
 }
 
 void ReadTeamNumberFromConsole(int* address){                                //Takim sayisi verisini almaak icin ornek fonksiyon
@@ -40,17 +44,20 @@ void ReadTeamNumberFromConsole(int* address){                                //T
 }
 
 void ReadMatchFromKeyboard(){
-    printf("Maclari tek tek girin cikmak icin N yazin.");
+    printf("Maclari tek tek girin cikmak icin 33 yazin.");
     char HomeTeam;
     int HomeTeamScore;
     char GuestTeam;
     int GuestTeamScore;
     while(1){
-        scanf("%c",HomeTeam);
-        if(HomeTeam == 'N'){
+        scanf("%c",&HomeTeam);
+        if(HomeTeam == '!'){
+            printf("naw");
             break;
         }
+
         scanf("%d %c %d", &HomeTeamScore , &GuestTeam , &GuestTeamScore);
+
         for(int i = 0;i <= NumberOfTeams; i++){
 
             if(HomeTeam == MoveStruct(i)->sname){
@@ -97,12 +104,18 @@ void BuildTeams(int TeamCount){
         MoveStruct(fV.a)->pscore = 0;
         MoveStruct(fV.a)->nscore = 0;
         MoveStruct(fV.a)->average = 0;
+        for(int i = 0; i <= TeamCount; i++){
+            MoveStruct(fV.a)->mchart[i] = 65+i;
+        }
     }
 }
 
 
 
 int main(){
-    
+    ReadTeamNumberFromConsole(AddressOfNumberOfTeams);
+    AllocateMemory(NumberOfTeams);
+    BuildTeams(NumberOfTeams);
+    ReadMatchFromKeyboard();
     return 0;
 }
