@@ -1,3 +1,5 @@
+// #Bora Arslan          #383218 #bora-arslan@outlook.com        #Struct Islemleri
+// #Huseyin Can Celikkol #383258 #huseyincancelikkol@hotmail.com #Dosya okuma yazma islemleri
 #include <stdio.h>
 #include <stdlib.h>
 
