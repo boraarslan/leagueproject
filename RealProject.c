@@ -45,10 +45,20 @@ void AllocateMemory(int TeamCount){
     PointArray = calloc(sizeof(int) , TeamCount);
 }
 
-void ReadTeamNumberFromConsole(int *address){                       //Takim sayisi verisini almaak icin ornek fonksiyon
-    printf("Kac tane takim olacak?");
-    scanf("%d", address);
+void ReadTeamNumberFromFile(int *address){                       //Takim sayisi verisini almaak icin ornek fonksiyon
+    FILE* fp =fopen("ayarlar.txt", "r");
+    fscanf(fp , "%d" , address);
 }
+
+
+void ReadPointsFromFile(){
+    FILE* fp =fopen("ayarlar.txt", "r");
+    fscanf(fp , "%*[^\n]\n" , NULL);
+    fscanf(fp , "%d" , &PointsForWin);
+    fscanf(fp , "%d" , &PointsForDraw);
+    fscanf(fp , "%d" , &PointsForLose);
+}
+
 
 void ReadMatchFromKeyboard(){
     printf("Maclari tek tek girin cikmak icin ! yazin.");
@@ -56,8 +66,11 @@ void ReadMatchFromKeyboard(){
     int HomeTeamScore = 0;
     char GuestTeam = 0;
     int GuestTeamScore = 0;
+    int checkVariable = 0;
     while (1){
-        scanf("%c", &HomeTeam);
+        checkVariable++;
+        printf("%d\n",checkVariable);
+        scanf(" %c", &HomeTeam);
         if (HomeTeam == '!'){
             break;
         }
@@ -121,11 +134,14 @@ void ReadMatchFromKeyboard(){
                             MoveStruct(a)->points += PointsForDraw;
                         }
                     }
+                    
                 }
             }
+            
         }
     }
 }
+
 
 void ReadMatchesFromFile(){
     FILE* fp = fopen("maclar.txt", "r");
@@ -134,12 +150,8 @@ void ReadMatchesFromFile(){
     char GuestTeam = 0;
     int GuestTeamScore = 0;
     int checkVariable = 0;
-    while (1){
-        checkVariable += 1;
-        if(fscanf(fp , "%c %d %c %d",&HomeTeam, &HomeTeamScore, &GuestTeam, &GuestTeamScore) == EOF){
-            break;
-        }
-
+    while (fscanf(fp , " %c %d %c %d",&HomeTeam, &HomeTeamScore, &GuestTeam, &GuestTeamScore) != EOF){
+        checkVariable++;
         if (((int)(HomeTeam)-65) >= NumberOfTeams || ((int)(GuestTeam)-65) >= NumberOfTeams){
             printf("%d'inci satirdaki mac gecersiz.\n", checkVariable);
             HomeTeam = 0;
@@ -228,6 +240,8 @@ void BuildTeams(int TeamCount){
         PointArray[i] = i;
     }
 }
+
+
 void AlphabeticOrder(int integer, int start){
     if(MoveStruct(PointArray[integer])->lname[start] == '\0'){
         int temp = PointArray[integer-1];
@@ -247,6 +261,7 @@ void AlphabeticOrder(int integer, int start){
         AlphabeticOrder(integer , start+1);
     }
 }
+
 
 void SortTeamsByPoint(){
     for(int i = 0; i < NumberOfTeams; i++){
@@ -271,6 +286,7 @@ void SortTeamsByPoint(){
     }
 }
 
+
 void ConstructTable(){
     printf("%-5s",  "SH");
     printf("%-30s", "TEAM NAME");
@@ -285,6 +301,20 @@ void ConstructTable(){
     printf("\n");
 }
 
+void ConstructTableFile(FILE* ptr){
+    fprintf(ptr ,"%-5s",  "SH");
+    fprintf(ptr ,"%-30s", "TEAM NAME");
+    fprintf(ptr ,"%-5s",  "P");
+    fprintf(ptr ,"%-5s",  "W");
+    fprintf(ptr ,"%-5s",  "L");
+    fprintf(ptr ,"%-5s",  "D");
+    fprintf(ptr ,"%-5s",  "POS");
+    fprintf(ptr ,"%-5s",  "NEG");
+    fprintf(ptr ,"%-5s",  "DIFF");
+    fprintf(ptr ,"%-5s",  "PTS");
+    fprintf(ptr ,"\n");
+}
+
 void DestructTable(){
     printf("%s", "SH = Short Name, ");
     printf("%s", "P = Played, ");
@@ -296,7 +326,18 @@ void DestructTable(){
     printf("%s", "DIFF = Difference, \n");
 }
 
-void PrintTableByPoint(){
+void DestructTableFile(FILE* ptr){
+    fprintf(ptr ,"%s", "SH = Short Name, ");
+    fprintf(ptr ,"%s", "P = Played, ");
+    fprintf(ptr ,"%s", "W = Games Won, ");
+    fprintf(ptr ,"%s", "L = Games Lost, ");
+    fprintf(ptr ,"%s", "D = Draw, ");
+    fprintf(ptr ,"%s", "POS = Positive Score, ");
+    fprintf(ptr ,"%s", "NEG = Negative Score, ");
+    fprintf(ptr ,"%s", "DIFF = Difference, \n");
+}
+
+void PrintTableByPointToConsole(){
     ConstructTable();
 
     for(int i = 0; i < NumberOfTeams; i++){
@@ -315,7 +356,26 @@ void PrintTableByPoint(){
     DestructTable();
 }
 
-void PrintTableByAlias(){
+void PrintTableByPointToFile(){
+    FILE* fp = fopen("puan_tablosu.txt","w");
+    ConstructTableFile(fp);
+    for(int i = 0; i < NumberOfTeams; i++){
+        fprintf(fp , "%-5c",  MoveStruct(PointArray[i])->sname);
+        fprintf(fp , "%-30s", MoveStruct(PointArray[i])->lname);
+        fprintf(fp , "%-5d",  MoveStruct(PointArray[i])->played);
+        fprintf(fp , "%-5d",  MoveStruct(PointArray[i])->won);
+        fprintf(fp , "%-5d",  MoveStruct(PointArray[i])->lost);
+        fprintf(fp , "%-5d",  MoveStruct(PointArray[i])->draw);
+        fprintf(fp , "%-5d",  MoveStruct(PointArray[i])->pscore);
+        fprintf(fp , "%-5d",  MoveStruct(PointArray[i])->nscore);
+        fprintf(fp , "%-5d",  MoveStruct(PointArray[i])->difference);
+        fprintf(fp , "%-5d\n",MoveStruct(PointArray[i])->points);
+    }
+
+    DestructTableFile(fp);
+}
+
+void PrintTableByAliasToConsole(){
     ConstructTable();
 
     for(int i = 0; i < NumberOfTeams; i++){
@@ -334,6 +394,25 @@ void PrintTableByAlias(){
     DestructTable();
 }
 
+void PrintTableByAliasToFile(){
+    FILE* fp = fopen("puan_tablosu","w");
+    ConstructTableFile(fp);
+    for(int i = 0; i < NumberOfTeams; i++){
+        fprintf(fp, "%-5c",  MoveStruct(i)->sname);
+        fprintf(fp, "%-30s", MoveStruct(i)->lname);
+        fprintf(fp, "%-5d",  MoveStruct(i)->played);
+        fprintf(fp, "%-5d",  MoveStruct(i)->won);
+        fprintf(fp, "%-5d",  MoveStruct(i)->lost);
+        fprintf(fp, "%-5d",  MoveStruct(i)->draw);
+        fprintf(fp, "%-5d",  MoveStruct(i)->pscore);
+        fprintf(fp, "%-5d",  MoveStruct(i)->nscore);
+        fprintf(fp, "%-5d",  MoveStruct(i)->difference);
+        fprintf(fp, "%-5d\n",MoveStruct(i)->points);
+    }
+
+    DestructTableFile(fp);
+}
+
 void GetTeamLongName(){
     FILE* fp = fopen("takimlar.txt" , "r+");
     for(int i = 0; i < NumberOfTeams; i++){
@@ -347,13 +426,15 @@ void GetTeamLongName(){
 }
 
 int main(){
-    ReadTeamNumberFromConsole(AddressOfNumberOfTeams);
+    ReadTeamNumberFromFile(AddressOfNumberOfTeams);
+    ReadPointsFromFile();
+    printf("%d , %d , %d\n", PointsForWin ,PointsForDraw , PointsForLose);
     AllocateMemory(NumberOfTeams);
     BuildTeams(NumberOfTeams);
     GetTeamLongName();
-    PrintTableByAlias();
+    PrintTableByAliasToConsole();
     ReadMatchesFromFile();
     SortTeamsByPoint();
-    PrintTableByPoint();
+    PrintTableByPointToFile();
     return 0;
 }
